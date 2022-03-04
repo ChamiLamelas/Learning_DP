@@ -8,19 +8,19 @@ when we choose xk = 3, the other numbers must sum to n-3, so we count how many w
 when we choose xk = 4, the other numbers must sum to n-4, so we count how many ways that's possible
 these 3 counts are smaller versions of this problem hence we can obtain a recurrence relation
 Dn = Dn-1 + Dn-3 + Dn-4 where Dk = # different ways to write k as a sum of 1s, 3s, and 4s.
-what base cases do we need? we know the following:
-Dn = 0 for n <= 0 because it's impossible to write 0 as a combination of 1s, 3s, and 4s.
-D1 = 1 but D0 + D-2 + D-3 = 0 != 1 = D1
-D2 = 1 because we can only write it as 1 + 1. D1 + D-1 + D-2 = 1 + 0 + 0 = 1 = D2
-thus, the base cases we need are: Dn = 0 for n <= 0, D1 = 1 for n = 1
+what base cases do we need? assume that the user will enter n > 0.
+D1 = D0 + D-2 + D-3, if xk = 1, there is 1 way to write 1 hence D0 = 1. it is impossible for xk = 3 or xk = 4 in this
+case hence D-2, D-3 (and in fact any Dn for n < 0) should be 0 to indicate it is impossible to express n in a way that
+xk being 1, 3, or 4 results in x1,...,xk-1 having to sum to a negative number. It is ok to have them sum to 0 because
+that just means n = xk (there is no requirement that k be anymore than 1) ==> base cases are D0 = 1, Dn = 0 for n < 0
 """
 
 
 def different_ways_rec(n):
     """Recursive implementation of different ways, O(n3^n) time and O(n) space maximum"""
-    if n <= 0:
+    if n < 0:
         return 0
-    if n == 1:
+    if n == 0:
         return 1
     return different_ways_rec(n - 1) + different_ways_rec(n - 3) + different_ways_rec(n - 4)
 
@@ -31,15 +31,21 @@ def different_ways_dp(n):
     # build array such that d[i] = # ways to write i as sum of 1s, 3s, and 4s
     d = [0] * (n + 1)
 
-    # d allows use to define D0 = 0, and we can set D1 = 1 but not for negatives, so we have to write alternative base
-    # cases. D2 = D1 + D-1 + D-2, so we need to define it. D3 = D2 + D0 + D-1, so we need to define that too.
-    # D2 = 1 because we can only write 1 + 1 = 2, but D3 = 2 because we can write 1 + 1 + 1 = 3 and 3 = 3.
-    # D4 and D5 can be expressed: D4 = D0 + D2 + D3, D5 = D1 + D2 + D4 so we don't have to set anymore base cases
+    # d allows us to define D0 = 1 as above, but we cannot represent Dn = 0 for negative n in d, thus we need different
+    # base cases. consider the following that have Dn n<0 on the RHS:
+    # D1 = D0 + D-2 + D-3 => we know D1 = 1 (1 = 1), add this as a base case
+    # D2 = D1 + D-1 + D-2 => we know D2 = 1 (1 + 1 = 2), add this as a base case
+    # D3 = D2 + D0 + D-1 => we know D3 = 2 (1 + 1 + 1 = 3, 3 = 3) add this as a base case
+    # we can express Dn for n >= 4 without negative numbers, example:
+    # D4 = D0 + D1 + D3 = 1 + 1 + 2 (1 way if xk = 4 i.e. when x1 + ... + xk-1 = 0, 1 way if xk = 3 i.e. when x1 + ...
+    # + xk-1 = 1, 2 ways if xk = 1 i.e. when x1 + ... + xk-1 = 3)
+    # thus we now have 4 base cases (which is the minimum here)
+    d[0] = 1
     d[1] = 1
     d[2] = 1
     d[3] = 2
 
-    # d[0] was set previously, and now we can derive from d Di for 4 <= i <= n
+    # now we can derive from d Di for 4 <= i <= n with our recursive step
     for i in range(4, n + 1):
         d[i] = d[i - 1] + d[i - 3] + d[i - 4]
 
