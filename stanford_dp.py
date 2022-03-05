@@ -1,4 +1,6 @@
 """
+Different ways derivation:
+
 let n = x1 + ... + xk where xi = 1, 3, or 4. what is the # of possible combinations x1,...,xk s.t. they sum to n?
 xk can only be 1, 3, or 4. thus, the sum of combinations x1,...,xk s.t. they sum to n will be:
 (# combinations x1,...,xk-1 s.t. they sum to n-1) + (# combinations x1,...,xk-1 s.t. they sum to n-3) +
@@ -26,7 +28,7 @@ def different_ways_rec(n):
 
 
 def different_ways_dp(n):
-    """DP implementation of different ways, O(n) time and O(n) space preallocated"""
+    """DP implementation of different ways, O(n) time and O(n) space pre-allocated"""
 
     # build array such that d[i] = # ways to write i as sum of 1s, 3s, and 4s
     d = [0] * (n + 1)
@@ -50,3 +52,6 @@ def different_ways_dp(n):
         d[i] = d[i - 1] + d[i - 3] + d[i - 4]
 
     return d[n]
+
+"""
+"""
